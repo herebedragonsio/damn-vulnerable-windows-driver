@@ -1,0 +1,20 @@
+# Visual Studio state
+.vs/
+*.user
+
+# Build output
+x86/
+x64/
+
+# Private keys, if any
+*.pfx
+*.pvk
+WDKTestCert*
+
+# Analysis and debugging output
+sdv/
+*.dmp
+*.etl
+
+# NuGet packages
+packages/
