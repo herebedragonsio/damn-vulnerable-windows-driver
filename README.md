@@ -1,7 +1,7 @@
 # Damn Vulnerable Windows Driver (DVWD)
-This is an intentionally vulnerable Windows driver. It has been tested on Windows 11. Currently, the driver only presents vulnerabilities exploited in BYOVD attacks. More attacks will be added in the future.
+This is an intentionally vulnerable Windows driver. It has been tested on Windows 11. Currently, the driver only presents vulnerabilities exploited in BYOVD attacks. More vulnerabilities will be added in the future.
 
-DVWD is a software-only, non-PnP driver that comes in both the legacy WMD and the new KMDF varieties.
+DVWD is a software-only, non-PnP driver that comes in both the legacy Windows Driver Model (WDM) and the modern Kernel-Mode Driver Framework (KMDF) varieties.
 
 ## Building the Drivers
 
@@ -58,3 +58,7 @@ An arbitrary memory read vulnerability exposes an unauthenticated IOCTL that all
 
 ### Arbitrary Memory Write
 An arbitrary memory write vulnerability exposes an unauthenticated IOCTL that allows user processes to write to arbitrary memory locations.
+
+## Feedback
+
+If you liked this project or have feedback or ideas for development, I would love to hear them! Create a GitHub issue or contact me directly at @herebedragonsio on X.
