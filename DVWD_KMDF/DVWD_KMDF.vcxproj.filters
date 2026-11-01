@@ -27,11 +27,6 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="DVWD_KMDF.c">
       <Filter>Source Files</Filter>
     </ClCompile>

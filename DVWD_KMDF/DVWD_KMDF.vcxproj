@@ -25,9 +25,6 @@
     <ClCompile Include="DVWD_KMDF.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Public.h" />
-  </ItemGroup>
-  <ItemGroup>
     <Inf Include="DVWD_KMDF.inf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
