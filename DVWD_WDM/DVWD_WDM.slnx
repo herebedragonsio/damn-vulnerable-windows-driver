@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="DVWD_WDM.vcxproj" Id="5bab0837-1656-ed3d-fb42-6cf703f4097d">
+    <Deploy />
+  </Project>
+</Solution>

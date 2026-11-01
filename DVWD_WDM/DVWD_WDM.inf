@@ -1,0 +1,64 @@
+;
+; MyWdmDriver.inf
+;
+; Sample INF for a software-only WDM driver (root-enumerated).
+; Intended for use in the Visual Studio driver project: Stampinf replaces
+; the $ARCH$ token and fills in DriverVer during the build.
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = %ManufacturerName%
+CatalogFile = DVWD_WDM.cat
+DriverVer   =                       ; set by Stampinf (Driver Settings > Stampinf)
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13                 ; driver store (Windows 10+)
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+DVWD_WDM.sys = 1,,
+
+;*****************************************
+; Install section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%DVWD_WDM.DeviceDesc% = DVWD_WDM_Device, Root\DVWD_WDM
+
+[DVWD_WDM_Device.NT]
+CopyFiles = Drivers_Dir
+
+[Drivers_Dir]
+DVWD_WDM.sys
+
+;-------------- Service installation
+
+[DVWD_WDM_Device.NT.Services]
+AddService = DVWD_WDM, %SPSVCINST_ASSOCSERVICE%, DVWD_WDM_Service_Inst
+
+[DVWD_WDM_Service_Inst]
+DisplayName    = %DVWD_WDM.SVCDESC%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\DVWD_WDM.sys
+
+;*****************************************
+; Strings
+;*****************************************
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName       = "Example Manufacturer"     ; TODO: replace
+DiskName               = "DVWD_WDM Installation Disk"
+DVWD_WDM.DeviceDesc = "DVWD_WDM Device"
+DVWD_WDM.SVCDESC    = "DVWD_WDM Service"
