@@ -3,6 +3,16 @@ This is an intentionally vulnerable Windows driver. It has been tested on Window
 
 DVWD is a software-only, non-PnP driver that comes in both the legacy Windows Driver Model (WDM) and the modern Kernel-Mode Driver Framework (KMDF) varieties.
 
+## Table of Contents
+
+- [Building the Drivers](#building-the-drivers)
+- [Loading the Drivers](#loading-the-drivers)
+- [BYOVD Attacks](#byovd-attacks)
+  - [Arbitrary Process Termination](#arbitrary-process-termination)
+  - [Arbitrary Memory Read](#arbitrary-memory-read)
+  - [Arbitrary Memory Write](#arbitrary-memory-write)
+- [Feedback](#feedback)
+
 ## Building the Drivers
 
 The build for both WMD and KMDR drivers is tested using Visual Studio 2026. The following needs to be added in the Visual Studio Installer:
