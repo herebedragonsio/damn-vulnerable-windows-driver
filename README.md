@@ -14,6 +14,7 @@ DVWD is a software-only, non-PnP driver that comes in both the legacy Windows Dr
 - [Feedback](#feedback)
 
 ## Building the Drivers
+<p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 
 The build for both WMD and KMDR drivers is tested using Visual Studio 2026. The following needs to be added in the Visual Studio Installer:
 
@@ -34,6 +35,7 @@ Also, download and install the Windows Driver Key (WDK) full package from https:
 Right-click on the Visual Studio project, open the Properties and navigate to Driver Signing. Ensure that `Sign Mode` is set to `Test Sign`. Build the project using Visual Studio and it will sign the `.sys` driver file with a test certificate.
 
 ## Loading the Drivers
+<p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 
 Because Windows by default requires kernel-mode drivers to be signed and we can't sign the vulnerable drivers here with a valid code-signing certificate authority, we need to disable Secure Boot and enable Test Mode to relax the driver-signing requirement. This should be done on a test Windows machine to avoid the adverse side effects of disabling Secure Mode and enabling Test Mode.
 
@@ -58,17 +60,22 @@ When done testing, the Service Control Manager can unload and remove the drivers
     sc.exe delete DVWD_KMDF
 
 ## BYOVD Attacks
+<p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 Bring-your-own-vulnerable-driver (BYOVD) attacks exploit vulnerabilities in signed Windows drivers. Ransomware and other cybercrime groups use often use vulnerable drivers to disrupt the endpoint agents of AV/EDR security tools and evade detection.
 
 ### Arbitrary Process Termination
+<p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 An arbitrary process termination vulnerability exposes an unauthenticated IOCTL that takes a process ID (PID) as an argument and has a source code path, at the end of which it passes the PID to a Windows process termination API, such az `ZwTerminateProcess`.
 
 ### Arbitrary Memory Read
+<p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 An arbitrary memory read vulnerability exposes an unauthenticated IOCTL that allows user processes to read arbitrary memory locations.
 
 ### Arbitrary Memory Write
+<p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 An arbitrary memory write vulnerability exposes an unauthenticated IOCTL that allows user processes to write to arbitrary memory locations.
 
 ## Feedback
+<p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 
 If you liked this project or have feedback or ideas for development, I would love to hear them! Create a GitHub issue or contact me directly at @herebedragonsio on X.
