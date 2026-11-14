@@ -134,11 +134,31 @@ NTSTATUS DispatchDeviceControl(_In_ PDEVICE_OBJECT DeviceObject, _Inout_ PIRP Ir
 
 static NTSTATUS dvwd_do_terminate(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, _Out_ ULONG_PTR* Information)
 {
-	UNREFERENCED_PARAMETER(Irp);
-	UNREFERENCED_PARAMETER(IrpSp);
+	ULONG inLen = IrpSp->Parameters.DeviceIoControl.InputBufferLength;
+	PVOID buf = Irp->AssociatedIrp.SystemBuffer;
 
 	*Information = 0;
-	return STATUS_SUCCESS;
+
+	if (inLen != 4 || buf == NULL)
+		return STATUS_INVALID_PARAMETER;
+
+	UINT32 pid = *((PUINT32) buf);
+
+	NTSTATUS status = STATUS_SUCCESS;
+	HANDLE process_handle;
+
+	OBJECT_ATTRIBUTES obj_attr;
+	InitializeObjectAttributes(&obj_attr, NULL, 0, NULL, NULL);
+
+	CLIENT_ID cid;
+	cid.UniqueProcess = (HANDLE) pid;
+	cid.UniqueThread = (HANDLE) 0;
+
+	status = ZwOpenProcess(&process_handle, DELETE, &obj_attr, &cid);
+	if (status != STATUS_SUCCESS)
+		KdPrint(("DVWD_WDM: failure terminating proccess %u: %ul", pid, status));
+
+	return status;
 }
 
 static NTSTATUS dvwd_do_read(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, _Out_ ULONG_PTR* Information)
