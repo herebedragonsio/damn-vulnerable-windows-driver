@@ -49,10 +49,10 @@ Microsoft requires since Windows 10 (version 1607) kernel-mode drivers to be sig
 
 Load the driver using the Service Control Manager:
 
-    sc.exe create DVWD_WDM type=kernel binPath= <path-to-repo>\damn-vulnerable-windows-driver\DVWD_WDM\x64\Debug\DVWD_WDM.sys
+    sc.exe create DVWD_WDM type=kernel binPath= <path-to-repo>\damn-vulnerable-windows-driver\DVWD_WDM\x64\Release\DVWD_WDM.sys
     sc.exe start DVWD_WDM
 
-    sc.exe create DVWD_KMDF type=kernel binPath= <path-to-repo>\damn-vulnerable-windows-driver\DVWD_KMDF\x64\Debug\DVWD_KMDF.sys
+    sc.exe create DVWD_KMDF type=kernel binPath= <path-to-repo>\damn-vulnerable-windows-driver\DVWD_KMDF\x64\Release\DVWD_KMDF.sys
     sc.exe start DVWD_KMDF
 
 When done testing, the Service Control Manager can unload and remove the drivers:
@@ -71,7 +71,7 @@ Bring-your-own-vulnerable-driver (BYOVD) attacks exploit vulnerabilities in sign
 <p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 An arbitrary process termination vulnerability exposes an unauthenticated IOCTL that takes a process ID (PID) as an argument and has a source code path, at the end of which it passes the PID to a Windows process termination API, such az `ZwTerminateProcess`.
 
-The exposed IOCTL is invoked via the symbolic link `\\.\DVWD_WDM` and the IOCTL code 0x222000:
+The exposed IOCTL is invoked via the symbolic link `\\.\DVWD_WDM` (WDM driver) or `\\.\DVWD_KMDF` (KMDF driver) and the IOCTL code 0x222000:
 
 ```
 static void TerminateProcess(DWORD targetPid)

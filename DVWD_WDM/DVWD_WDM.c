@@ -46,12 +46,11 @@ NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT DriverObject, _In_ PUNICODE_STRING Regi
 	RtlInitUnicodeString(&symlinkName, SYMLINK_NAME_W);
 
 	/*
-	* VULNERABILITY:
-	*
-	* Creates the device driver symlink without specifying a restrictive security descriptor using
-	* IoCreateDeviceSecure(). This means that any unprivileged user can interact with the device driver
-	* and send IOCTLs.
-	*/
+	 * VULNERABILITY:
+	 *
+	 * IoCreateDevice() creates the device object with a default security descriptor, which is overly permissive.
+	 * It allows any unprivileged user to interact with the device driver and send IOCTLs.
+	 */
 	status = IoCreateDevice(DriverObject, 0, &deviceName, FILE_DEVICE_UNKNOWN, FILE_DEVICE_SECURE_OPEN, FALSE,
 		                    &deviceObject);
 	if (!NT_SUCCESS(status)) {
@@ -154,6 +153,12 @@ static NTSTATUS dvwd_do_terminate(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, 
 	cid.UniqueProcess = (HANDLE) pid;
 	cid.UniqueThread = (HANDLE) 0;
 
+	/*
+	 * VULNERABILITY:
+	 *
+	 * ZwOpenProcess() and ZwTerminateProcess() open a handle to and terminate an arbitrary process.
+	 * This bypasses kernel process protections, such as the protected (PPL) status of security tool processes.
+	 */
 	status = ZwOpenProcess(&process_handle, DELETE, &obj_attr, &cid);
 	if (status != STATUS_SUCCESS)
 		KdPrint(("DVWD_WDM: failure accessing proccess %u to terminate: %ul", pid, status));
@@ -166,6 +171,7 @@ static NTSTATUS dvwd_do_terminate(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, 
 	return status;
 }
 
+
 static NTSTATUS dvwd_do_read(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, _Out_ ULONG_PTR* Information)
 {
 	UNREFERENCED_PARAMETER(Irp);
@@ -174,6 +180,7 @@ static NTSTATUS dvwd_do_read(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, _Out_
 	*Information = 0;
 	return STATUS_SUCCESS;
 }
+
 
 static NTSTATUS dvwd_do_write(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, _Out_ ULONG_PTR* Information)
 {
