@@ -156,7 +156,12 @@ static NTSTATUS dvwd_do_terminate(_In_ PIRP Irp, _In_ PIO_STACK_LOCATION IrpSp, 
 
 	status = ZwOpenProcess(&process_handle, DELETE, &obj_attr, &cid);
 	if (status != STATUS_SUCCESS)
-		KdPrint(("DVWD_WDM: failure terminating proccess %u: %ul", pid, status));
+		KdPrint(("DVWD_WDM: failure accessing proccess %u to terminate: %ul", pid, status));
+	else {
+		status = ZwTerminateProcess(process_handle, STATUS_SUCCESS);
+		if (status != STATUS_SUCCESS)
+			KdPrint(("DVWD_WDM: failure terminating process %u: %ul", pid, status));
+	}
 
 	return status;
 }
