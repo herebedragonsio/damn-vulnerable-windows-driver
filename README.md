@@ -37,13 +37,17 @@ Right-click on the Visual Studio project, open the Properties and navigate to Dr
 ## Loading the Drivers
 <p align="right"><a href="#damn-vulnerable-windows-driver-dvwd">back to top</a></p>
 
-Because Windows by default requires kernel-mode drivers to be signed and we can't sign the vulnerable drivers here with a valid code-signing certificate authority, we need to disable Secure Boot and enable Test Mode to relax the driver-signing requirement. This should be done on a test Windows machine to avoid the adverse side effects of disabling Secure Mode and enabling Test Mode.
+**Important**: Testing vulnerable kernel-mode drivers should only ever be done on a virtual machine dedicated for this purpose. Disabling Secure Boot, loading test-grade kernel drivers, and testing the vulnerabilities in them can impact the stability of your system.
 
-1. Restart the machine and disable Secure Boot in the BIOS or the VM settings.
-2. Enable Test Mode using `bcdedit /set testsigning on` and restart the machine again.
+Microsoft requires since Windows 10 (version 1607) kernel-mode drivers to be signed through the Microsoft Hardware Dev Center - either by going through Hardware Lab Kit (HLK) testing or using attestation signing. For testing purposes, this requirement can be relaxed by enabling Windows Test Signing Mode in the test virtual machine:
+
+1. If you machine supports UEFI, restart it and disable Secure Boot in the UEFI or the VM settings.
+2. Enable Test Mode by running `bcdedit /set testsigning on` with Administrator privileges and restart the machine again.
+3. Optionally, run `bcdedit /enum` and look for `testsigning: Yes` to confirm that Test Mode is enabled.
+4. Restart the machine for the Test Mode activation to take effect.
 3. You should see a `Test Mode` watermark in the lower right-hand corner of your desktop.
 
-Non-PnP drivers are loaded using the Service Control Manager:
+Load the driver using the Service Control Manager:
 
     sc.exe create DVWD_WDM type=kernel binPath= <path-to-repo>\damn-vulnerable-windows-driver\DVWD_WDM\x64\Debug\DVWD_WDM.sys
     sc.exe start DVWD_WDM
